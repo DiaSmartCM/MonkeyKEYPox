@@ -1,0 +1,464 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Genomix-Lab : plateforme de surveillance génomique du Mpox, Centre Pasteur du Cameroun">
+<title>Genomix-Lab</title>
+<meta name="theme-color" content="#B8202A">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout : barre latérale sur PC, barre d'onglets en bas sur téléphone */
+:root{
+  --red:#B8202A; --red-soft:#FBE9EA; --green:#17803D; --green-soft:#E6F4EA;
+  --bg:#F6F8F7; --panel:#FFFFFF; --fg:#16201B; --muted:#5B6B63; --line:#DCE3DF;
+  --warn:#B26A00; --warn-soft:#FFF3DC;
+  --clIa:#B8202A; --clIb:#E0575F; --clIIa:#5FAF7A; --clIIb:#17803D; --clNA:#9AA7A0;
+  --display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --red:#F0646C; --red-soft:#3A1A1D; --green:#4CC57A; --green-soft:#16301F;
+  --bg:#0F1512; --panel:#171F1B; --fg:#E7EEEA; --muted:#97A69E; --line:#2A3530;
+  --warn:#F2B04A; --warn-soft:#33270F;
+  --clIa:#F0646C; --clIb:#F4979C; --clIIa:#9AD9AE; --clIIb:#4CC57A; --clNA:#6B7A72; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --red:#F0646C; --red-soft:#3A1A1D; --green:#4CC57A; --green-soft:#16301F;
+  --bg:#0F1512; --panel:#171F1B; --fg:#E7EEEA; --muted:#97A69E; --line:#2A3530;
+  --warn:#F2B04A; --warn-soft:#33270F;
+  --clIa:#F0646C; --clIb:#F4979C; --clIIa:#9AD9AE; --clIIb:#4CC57A; --clNA:#6B7A72; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+img{max-width:100%}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font:15px/1.5 var(--body)}
+button,input,select,textarea{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+.app{display:grid;grid-template-columns:240px 1fr;min-height:100%}
+aside{background:var(--panel);border-right:1px solid var(--line);padding:20px 14px;display:flex;flex-direction:column;gap:22px;position:sticky;top:0;height:100vh}
+.brand{display:flex;gap:10px;align-items:center;padding:0 6px}
+.logo{width:40px;height:40px;flex:none}
+.brand b{font:800 18px/1.1 var(--display);display:block}
+.brand small{color:var(--muted);font-size:11.5px}
+nav{display:flex;flex-direction:column;gap:2px}
+nav button{display:flex;align-items:center;gap:10px;border:0;background:none;padding:10px 12px;border-radius:8px;cursor:pointer;text-align:left;color:var(--muted);font-weight:500}
+nav button svg{width:20px;height:20px;flex:none}
+nav button:hover{background:var(--bg);color:var(--fg)}
+nav button[aria-current="true"]{background:var(--red-soft);color:var(--red)}
+.side-foot{margin-top:auto;font-size:12px;color:var(--muted);padding:0 6px}
+main{min-width:0;padding-block:24px 96px;padding-inline:clamp(16px,3vw,36px);max-width:1180px;width:100%}
+header.top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap;margin-bottom:4px}
+h1{font:800 clamp(24px,3.4vw,34px)/1.1 var(--display);margin:0;letter-spacing:-.02em;text-wrap:balance}
+h2{font:600 18px/1.2 var(--display);margin:0 0 12px}
+.eyebrow{text-transform:uppercase;letter-spacing:.08em;font-size:11.5px;font-weight:600;color:var(--green)}
+.grid{display:grid;gap:16px}
+.kpis{grid-template-columns:repeat(4,minmax(0,1fr))}
+.two{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr)}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;min-width:0}
+.kpi .v{font:800 30px/1 var(--display);font-variant-numeric:tabular-nums;margin-top:6px}
+.kpi .l{color:var(--muted);font-size:13px}
+.kpi .d{font-size:12.5px;margin-top:6px;color:var(--muted)}
+.tbl{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th{text-align:left;font-weight:600;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.05em;padding:8px 10px;border-bottom:1px solid var(--line);white-space:nowrap}
+td{padding:10px;border-bottom:1px solid var(--line);white-space:nowrap}
+.mono{font-family:var(--mono);font-size:13px;font-variant-numeric:tabular-nums}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:2px 9px;border-radius:99px;font-size:12px;font-weight:600}
+.chip i{width:8px;height:8px;border-radius:50%;background:currentColor}
+.c-Ia{color:var(--clIa);background:var(--red-soft)} .c-Ib{color:var(--clIb);background:var(--red-soft)}
+.c-IIa{color:var(--clIIa);background:var(--green-soft)} .c-IIb{color:var(--clIIb);background:var(--green-soft)}
+.st-ok{color:var(--green);background:var(--green-soft)} .st-run{color:var(--warn);background:var(--warn-soft)} .st-fail{color:var(--red);background:var(--red-soft)} .st-wait{color:var(--muted);background:var(--bg)}
+.bar{height:8px;border-radius:4px;background:var(--bg);overflow:hidden}
+.bar span{display:block;height:100%;background:var(--green)}
+.btn{border:1px solid var(--line);background:var(--panel);padding:9px 14px;border-radius:8px;cursor:pointer;font-weight:600;font-size:14px}
+.btn.primary{background:var(--red);border-color:var(--red);color:#fff}
+.btn.sm{padding:4px 10px;font-size:12.5px}
+.btn.danger{color:var(--red)}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;padding:3px;background:var(--panel)}
+.seg button{border:0;background:none;padding:7px 14px;border-radius:6px;cursor:pointer;font-weight:600;color:var(--muted)}
+.seg button[aria-pressed="true"]{background:var(--green);color:#fff}
+.steps{list-style:none;margin:0;padding:0}
+.steps li{display:grid;grid-template-columns:28px 1fr auto;gap:12px;align-items:start;padding:12px 0;border-bottom:1px dashed var(--line)}
+.steps li:last-child{border-bottom:0}
+.dot{width:24px;height:24px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font:600 11px var(--mono);color:var(--muted);background:var(--panel)}
+.steps li.done .dot{background:var(--green);border-color:var(--green);color:#fff}
+.steps li.run .dot{border-color:var(--warn);color:var(--warn);animation:pulse 1s infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 5px var(--warn-soft)}}
+@media (prefers-reduced-motion:reduce){.steps li.run .dot{animation:none}}
+.steps b{display:block;font-weight:600}
+.steps small{color:var(--muted)}
+.tool{font:500 12px var(--mono);color:var(--muted);white-space:nowrap}
+pre.code{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:14px;overflow-x:auto;font:13px/1.55 var(--mono);margin:0}
+form.add{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;align-items:end}
+label{display:grid;gap:4px;font-size:12.5px;color:var(--muted);font-weight:500}
+input,select,textarea{border:1px solid var(--line);background:var(--panel);border-radius:8px;padding:8px 10px;min-width:0}
+textarea{font-family:var(--mono);font-size:13px;width:100%;resize:vertical}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--muted)}
+.legend span{display:inline-flex;gap:6px;align-items:center}
+.legend i{width:10px;height:10px;border-radius:50%}
+.hbars{display:grid;gap:9px}
+.hbar{display:grid;grid-template-columns:110px 1fr 34px;gap:10px;align-items:center;font-size:13.5px}
+.hbar .track{display:flex;height:14px;border-radius:4px;overflow:hidden;background:var(--bg)}
+.hbar .n{text-align:right;font-family:var(--mono);font-size:12.5px}
+.svgwrap{overflow-x:auto}
+svg text{fill:var(--fg);font-family:var(--mono);font-size:11px}
+.empty{border:1px dashed var(--line);border-radius:10px;padding:22px;text-align:center;color:var(--muted);font-size:14px}
+.empty b{display:block;color:var(--fg);font-weight:600;margin-bottom:4px}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:8px;font-size:14px;z-index:20}
+.note{font-size:13px;color:var(--muted)}
+section[data-view]{display:grid;gap:16px}
+@media (max-width:980px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.two{grid-template-columns:1fr}}
+@media (max-width:760px){
+  .app{grid-template-columns:1fr}
+  aside{position:fixed;bottom:0;left:0;right:0;top:auto;height:auto;flex-direction:row;padding:6px 6px calc(6px + env(safe-area-inset-bottom,0px));border-right:0;border-top:1px solid var(--line);z-index:10}
+  aside .brand,aside .side-foot{display:none}
+  nav{flex-direction:row;width:100%;justify-content:space-around}
+  nav button{flex-direction:column;gap:2px;font-size:10.5px;padding:6px 4px;flex:1;align-items:center}
+  .mob-brand{display:flex!important}
+  .hbar{grid-template-columns:86px 1fr 30px}
+}
+.mob-brand{display:none;gap:10px;align-items:center;margin-bottom:14px}
+.mob-brand b{font:800 17px var(--display)}
+</style>
+</head>
+<body>
+
+
+<div class="app">
+<aside>
+  <div class="brand">
+    <svg class="logo" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="19" fill="var(--red)"/><path d="M13 9c9 4 9 18 14 22M27 9c-9 4-9 18-14 22" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"/><path d="M15 14h10M14.5 20h11M15 26h10" stroke="#fff" stroke-width="1.6" opacity=".8"/></svg>
+    <div><b>Genomix-Lab</b><small>Centre Pasteur du Cameroun</small></div>
+  </div>
+  <nav id="nav">
+    <button data-go="tableau" aria-current="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9" rx="1"/><rect x="14" y="3" width="7" height="5" rx="1"/><rect x="14" y="12" width="7" height="9" rx="1"/><rect x="3" y="16" width="7" height="5" rx="1"/></svg>Tableau</button>
+    <button data-go="echantillons"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 3h6M10 3v6l-5 9a2 2 0 0 0 2 3h10a2 2 0 0 0 2-3l-5-9V3"/></svg>Échantillons</button>
+    <button data-go="pipelines"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="12" cy="18" r="2"/><path d="M7 6h10M6 8l5 8M18 8l-5 8"/></svg>Pipelines</button>
+    <button data-go="phylo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4M7 6v12M7 6h6M7 18h6M13 3v6M13 3h8M13 9h8M13 15v6M13 15h8M13 21h8"/></svg>Phylogénie</button>
+    <button data-go="surveillance"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-6.5-7-12a7 7 0 0 1 14 0c0 5.5-7 12-7 12z"/><circle cx="12" cy="9" r="2.5"/></svg>Surveillance</button>
+  </nav>
+  <div class="side-foot">Laboratoire de virologie · Yaoundé<br>Version 1.0</div>
+</aside>
+
+<main>
+  <div class="mob-brand"><svg class="logo" viewBox="0 0 40 40" aria-hidden="true" style="width:32px;height:32px"><circle cx="20" cy="20" r="19" fill="var(--red)"/><path d="M13 9c9 4 9 18 14 22M27 9c-9 4-9 18-14 22" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg><b>Genomix-Lab · CPC</b></div>
+
+  <!-- TABLEAU -->
+  <section data-view="tableau">
+    <header class="top"><div><div class="eyebrow">Surveillance génomique du Mpox</div><h1>Tableau de bord du laboratoire</h1></div></header>
+    <div class="grid kpis" id="kpis"></div>
+    <div class="grid two">
+      <div class="card"><h2>Génomes par mois et par clade</h2><div class="svgwrap" id="chartMonth"></div><div class="legend" id="legMonth" style="margin-top:8px"></div></div>
+      <div class="card"><h2>Statut des échantillons</h2><div id="statusBox" class="grid" style="gap:10px"></div></div>
+    </div>
+    <div class="card"><h2>Derniers échantillons</h2><div class="tbl" id="lastTbl"></div></div>
+  </section>
+
+  <!-- ECHANTILLONS -->
+  <section data-view="echantillons" hidden>
+    <header class="top"><div><div class="eyebrow">Registre</div><h1>Échantillons</h1></div></header>
+    <div class="card">
+      <h2 id="formTitle">Enregistrer un échantillon</h2>
+      <form class="add" id="addForm">
+        <label for="fId">Code échantillon<input id="fId" required placeholder="CPC-MPX-26-0001"></label>
+        <label for="fDate">Reçu le<input id="fDate" type="date" required></label>
+        <label for="fReg">Région<select id="fReg"></select></label>
+        <label for="fType">Prélèvement<select id="fType"><option>Écouvillon de lésion</option><option>Croûte</option><option>Sang total</option><option>Écouvillon oropharyngé</option><option>Autre</option></select></label>
+        <label for="fCt">Ct qPCR<input id="fCt" type="number" step="0.1" min="5" max="45"></label>
+        <label for="fTech">Technologie<select id="fTech"><option>Illumina</option><option>Nanopore</option></select></label>
+        <label for="fClade">Clade<select id="fClade"><option value="">Non déterminé</option><option>Ia</option><option>Ib</option><option>IIa</option><option>IIb</option></select></label>
+        <label for="fLin">Lignée<input id="fLin" placeholder="ex. A.2.1"></label>
+        <label for="fCov">Couverture (%)<input id="fCov" type="number" step="0.1" min="0" max="100"></label>
+        <label for="fDepth">Profondeur moy. (×)<input id="fDepth" type="number" min="0"></label>
+        <label for="fSt">Statut<select id="fSt"><option value="wait">En attente</option><option value="run">En analyse</option><option value="ok">Génome validé</option><option value="fail">Couverture faible</option></select></label>
+        <div class="row"><button class="btn primary" type="submit" id="saveBtn">Enregistrer</button><button class="btn" type="button" id="cancelEdit" hidden>Annuler</button></div>
+      </form>
+    </div>
+    <div class="card">
+      <div class="row" style="justify-content:space-between;margin-bottom:10px"><h2 style="margin:0">Tous les échantillons</h2>
+        <input id="search" placeholder="Rechercher un code ou une région" style="width:min(280px,100%)"></div>
+      <div class="tbl" id="sampleTbl"></div>
+    </div>
+    <div class="card">
+      <h2>Sauvegarde</h2>
+      <p class="note" style="margin:0 0 10px">Les données restent sur cet appareil. Faites une sauvegarde régulière pour les garder ou les passer sur un autre appareil.</p>
+      <div class="row">
+        <button class="btn" id="expBtn">Télécharger la sauvegarde</button>
+        <button class="btn" id="expCopy">Copier la sauvegarde</button>
+        <label class="btn" for="impFile" style="display:inline-block;color:var(--fg)">Restaurer un fichier<input id="impFile" type="file" accept=".json,application/json" hidden></label>
+        <button class="btn danger" id="wipeBtn">Tout effacer</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- PIPELINES -->
+  <section data-view="pipelines" hidden>
+    <header class="top">
+      <div><div class="eyebrow">Analyse bio-informatique</div><h1>Pipelines de séquençage</h1></div>
+      <div class="seg" role="group" aria-label="Technologie"><button id="tIll" aria-pressed="true">Illumina</button><button id="tOnt" aria-pressed="false">Oxford Nanopore</button></div>
+    </header>
+    <div class="grid two">
+      <div class="card">
+        <div class="row" style="justify-content:space-between;margin-bottom:6px"><h2 style="margin:0" id="plTitle"></h2><button class="btn primary" id="runBtn">Lancer une simulation</button></div>
+        <p class="note" id="plDesc" style="margin:0 0 6px"></p>
+        <ol class="steps" id="steps"></ol>
+      </div>
+      <div class="grid" style="align-content:start">
+        <div class="card"><h2>Paramètres du lot</h2>
+          <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px">
+            <label for="pRun">Lot<input id="pRun" value="RUN-001"></label>
+            <label for="pRef">Génome de référence<select id="pRef"><option value="NC_063383.1">NC_063383.1 · clade IIb</option><option value="NC_003310.1">NC_003310.1 · clade I</option></select></label>
+            <label for="pDepth">Profondeur min.<input id="pDepth" type="number" value="10"></label>
+            <label for="pThr">Processeurs<input id="pThr" type="number" value="8"></label>
+          </div>
+        </div>
+        <div class="card"><div class="row" style="justify-content:space-between;margin-bottom:8px"><h2 style="margin:0">Script généré</h2><button class="btn" id="copyBtn">Copier</button></div>
+          <pre class="code" id="script"></pre>
+          <p class="note" style="margin:8px 0 0">À exécuter sur le serveur Linux du laboratoire. Dans l'application, l'exécution est une simulation.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PHYLO -->
+  <section data-view="phylo" hidden>
+    <header class="top"><div><div class="eyebrow">Nextclade · IQ-TREE</div><h1>Phylogénie des génomes</h1></div></header>
+    <div class="card">
+      <h2>Importer un arbre</h2>
+      <p class="note" style="margin:0 0 8px">Collez le contenu d'un fichier Newick (.nwk, .treefile d'IQ-TREE) ou choisissez le fichier. Les feuilles dont le nom contient un code d'échantillon du registre prennent la couleur de son clade.</p>
+      <textarea id="nwk" rows="4" placeholder="((CPC-MPX-26-0001:0.01,CPC-MPX-26-0002:0.02):0.05,NC_063383.1:0.03);"></textarea>
+      <div class="row" style="margin-top:10px"><button class="btn primary" id="drawBtn">Afficher l'arbre</button><label class="btn" for="nwkFile" style="display:inline-block;color:var(--fg)">Choisir un fichier<input id="nwkFile" type="file" accept=".nwk,.newick,.tree,.treefile,.txt" hidden></label></div>
+    </div>
+    <div class="card">
+      <div class="legend" style="margin-bottom:10px"><span><i style="background:var(--clIa)"></i>Ia</span><span><i style="background:var(--clIb)"></i>Ib</span><span><i style="background:var(--clIIa)"></i>IIa</span><span><i style="background:var(--clIIb)"></i>IIb</span><span><i style="background:var(--clNA)"></i>Hors registre</span></div>
+      <div class="svgwrap" id="tree"></div>
+    </div>
+  </section>
+
+  <!-- SURVEILLANCE -->
+  <section data-view="surveillance" hidden>
+    <header class="top"><div><div class="eyebrow">Épidémiologie génomique</div><h1>Surveillance par région</h1></div></header>
+    <div class="grid two">
+      <div class="card"><h2>Génomes par région et par clade</h2><div class="hbars" id="regBars"></div></div>
+      <div class="card"><h2>Alertes automatiques</h2><div class="grid" id="alerts" style="gap:10px"></div></div>
+    </div>
+    <div class="card">
+      <h2>Mutations d'intérêt suivies</h2>
+      <form class="add" id="mutForm" style="margin-bottom:12px">
+        <label for="mGene">Gène / motif<input id="mGene" required placeholder="ex. OPG057 (F13L)"></label>
+        <label for="mType">Type<input id="mType" placeholder="ex. Substitution"></label>
+        <label for="mClade">Clade<select id="mClade"><option value="">Tous</option><option>Ia</option><option>Ib</option><option>IIa</option><option>IIb</option></select></label>
+        <label for="mWhy">Pourquoi on la suit<input id="mWhy"></label>
+        <label for="mN">Génomes concernés<input id="mN" type="number" min="0" value="0"></label>
+        <button class="btn primary" type="submit">Ajouter</button>
+      </form>
+      <div class="tbl" id="mutTbl"></div>
+    </div>
+  </section>
+</main>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+const REG=["Centre","Littoral","Ouest","Nord-Ouest","Sud-Ouest","Est","Sud","Adamaoua","Nord","Extrême-Nord"];
+const CLADES=["Ia","Ib","IIa","IIb"];
+const CCOL={Ia:"var(--clIa)",Ib:"var(--clIb)",IIa:"var(--clIIa)",IIb:"var(--clIIb)"};
+const ST={ok:["Génome validé","st-ok"],run:["En analyse","st-run"],fail:["Couverture faible","st-fail"],wait:["En attente","st-wait"]};
+const KEY="mpoxseq-cpc-v1";
+let DB={samples:[],mutations:[],newick:""};
+try{Object.assign(DB,JSON.parse(localStorage.getItem(KEY)||"{}"))}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){toast("Impossible d'enregistrer sur cet appareil")}}
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const num=v=>v===""||v==null||isNaN(v)?null:+v;
+const fr=(v,d=1)=>v==null?"—":v.toFixed(d).replace(".",",");
+const chip=c=>c?`<span class="chip c-${c}"><i></i>Clade ${c}</span>`:'<span class="note">—</span>';
+const stc=s=>`<span class="chip ${ST[s][1]}">${ST[s][0]}</span>`;
+const empty=(t,x,go)=>`<div class="empty"><b>${t}</b>${x}${go?`<div style="margin-top:10px"><button class="btn sm" data-jump="${go}">Enregistrer un échantillon</button></div>`:""}</div>`;
+function toast(t){const e=$("toast");e.textContent=t;e.hidden=false;clearTimeout(e._t);e._t=setTimeout(()=>e.hidden=true,2400)}
+
+/* navigation */
+function go(v){document.querySelectorAll("[data-view]").forEach(s=>s.hidden=s.dataset.view!==v);
+ document.querySelectorAll("#nav button").forEach(b=>b.setAttribute("aria-current",b.dataset.go===v));window.scrollTo(0,0)}
+$("nav").addEventListener("click",e=>{const b=e.target.closest("button");if(b)go(b.dataset.go)});
+document.addEventListener("click",e=>{const b=e.target.closest("[data-jump]");if(b){go(b.dataset.jump);$("fId").focus()}});
+if(/^#[a-z]+$/.test(location.hash)&&document.querySelector(`[data-view="${location.hash.slice(1)}"]`))go(location.hash.slice(1));
+
+function renderAll(){renderDash();renderSamples();renderSurv();drawTree()}
+
+/* tableau */
+function renderDash(){
+ const s=DB.samples,ok=s.filter(x=>x.st==="ok"),cov=ok.filter(x=>x.cov!=null);
+ const wk=s.filter(x=>(Date.now()-new Date(x.date))/864e5<=7).length;
+ const k=[["Échantillons reçus",s.length,wk+" ces 7 derniers jours"],["Génomes validés",ok.length,s.length?Math.round(ok.length/s.length*100)+" % des échantillons":"aucun pour l'instant"],
+  ["Couverture moyenne",cov.length?fr(cov.reduce((a,x)=>a+x.cov,0)/cov.length)+" %":"—","sur les génomes validés"],["En cours d'analyse",s.filter(x=>x.st==="run").length,s.filter(x=>x.st==="wait").length+" en attente"]];
+ $("kpis").innerHTML=k.map(([l,v,d])=>`<div class="card kpi"><div class="l">${l}</div><div class="v">${v}</div><div class="d">${d}</div></div>`).join("");
+ $("lastTbl").innerHTML=s.length?table([...s].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,6),["id","date","reg","tech","clade","cov","st"]):empty("Aucun échantillon enregistré","Les derniers échantillons apparaîtront ici.","echantillons");
+ const n=Object.keys(ST).map(k=>[k,s.filter(x=>x.st===k).length]);
+ $("statusBox").innerHTML=s.length?n.map(([k,v])=>`<div><div class="row" style="justify-content:space-between">${stc(k)}<span class="mono">${v}</span></div><div class="bar" style="margin-top:6px"><span style="width:${v/s.length*100}%;background:${k==="fail"?"var(--red)":k==="run"?"var(--warn)":k==="wait"?"var(--clNA)":"var(--green)"}"></span></div></div>`).join(""):empty("Rien à afficher","La répartition par statut apparaîtra ici.");
+ monthChart();
+}
+function table(rows,cols,actions){
+ const H={id:"Code",reg:"Région",type:"Prélèvement",ct:"Ct",tech:"Technologie",clade:"Clade",lin:"Lignée",cov:"Couverture",depth:"Prof. moy.",st:"Statut",date:"Reçu le"};
+ const C={id:r=>`<td class="mono">${esc(r.id)}</td>`,ct:r=>`<td class="mono">${fr(r.ct)}</td>`,clade:r=>`<td>${chip(r.clade)}</td>`,st:r=>`<td>${stc(r.st)}</td>`,
+  cov:r=>`<td><div class="row" style="flex-wrap:nowrap"><div class="bar" style="width:70px"><span style="width:${r.cov||0}%;${r.cov!=null&&r.cov<90?"background:var(--red)":""}"></span></div><span class="mono">${r.cov!=null?fr(r.cov)+" %":"—"}</span></div></td>`,
+  depth:r=>`<td class="mono">${r.depth!=null?r.depth+"×":"—"}</td>`,lin:r=>`<td class="mono">${esc(r.lin)||"—"}</td>`,date:r=>`<td class="mono">${esc(r.date)}</td>`};
+ return `<table><thead><tr>${cols.map(c=>`<th>${H[c]}</th>`).join("")}${actions?"<th></th>":""}</tr></thead><tbody>${rows.map(r=>`<tr>${cols.map(c=>C[c]?C[c](r):`<td>${esc(r[c])}</td>`).join("")}${actions?`<td><div class="row" style="flex-wrap:nowrap;gap:6px"><button class="btn sm" data-edit="${esc(r.id)}">Modifier</button><button class="btn sm danger" data-del="${esc(r.id)}">Supprimer</button></div></td>`:""}</tr>`).join("")}</tbody></table>`;
+}
+function monthChart(){
+ const now=new Date(),months=[];for(let i=5;i>=0;i--){const d=new Date(now.getFullYear(),now.getMonth()-i,1);months.push([d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0"),d.toLocaleDateString("fr-FR",{month:"short"})])}
+ const data=months.map(([k])=>CLADES.map(c=>DB.samples.filter(x=>x.clade===c&&x.date.startsWith(k)).length));
+ $("legMonth").innerHTML=CLADES.map(c=>`<span><i style="background:${CCOL[c]}"></i>Clade ${c}</span>`).join("");
+ if(!data.flat().some(Boolean)){$("chartMonth").innerHTML=empty("Pas encore de génome typé","Renseignez le clade d'un échantillon pour voir l'évolution sur 6 mois.");return}
+ const tot=data.map(r=>r.reduce((a,b)=>a+b,0)),step=Math.max(1,Math.ceil(Math.max(...tot)/4)),max=step*4;
+ const W=520,H=210,pl=30,pb=24,bw=44,gap=(W-pl-months.length*bw)/months.length,ph=H-pb-10;
+ let g="";for(let t=0;t<=max;t+=step){const y=H-pb-(t/max)*ph;g+=`<line x1="${pl}" x2="${W}" y1="${y}" y2="${y}" stroke="var(--line)"/><text x="${pl-6}" y="${y+4}" text-anchor="end">${t}</text>`}
+ months.forEach(([,lab],i)=>{let x=pl+gap/2+i*(bw+gap),y=H-pb;data[i].forEach((v,j)=>{if(!v)return;const h=v/max*ph;y-=h;g+=`<rect x="${x}" y="${y}" width="${bw}" height="${h}" fill="${CCOL[CLADES[j]]}"><title>${lab} · clade ${CLADES[j]} : ${v}</title></rect>`});
+  g+=`<text x="${x+bw/2}" y="${H-6}" text-anchor="middle">${lab}</text>`});
+ $("chartMonth").innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" style="min-width:380px" role="img" aria-label="Génomes par mois et par clade">${g}</svg>`;
+}
+
+/* échantillons */
+$("fReg").innerHTML=REG.map(r=>`<option>${r}</option>`).join("");
+let editing=null;
+function resetForm(){editing=null;$("addForm").reset();$("fDate").value=new Date().toISOString().slice(0,10);$("formTitle").textContent="Enregistrer un échantillon";$("saveBtn").textContent="Enregistrer";$("cancelEdit").hidden=true;$("fId").disabled=false}
+function renderSamples(){const q=$("search").value.toLowerCase(),rows=DB.samples.filter(r=>(r.id+r.reg).toLowerCase().includes(q)).sort((a,b)=>b.date.localeCompare(a.date));
+ $("sampleTbl").innerHTML=DB.samples.length?(rows.length?table(rows,["id","date","reg","type","ct","tech","clade","lin","cov","depth","st"],true):empty("Aucun résultat","Aucun code ou région ne correspond à la recherche.")):empty("Le registre est vide","Remplissez le formulaire ci-dessus pour ajouter le premier échantillon.")}
+$("search").addEventListener("input",renderSamples);
+$("addForm").addEventListener("submit",e=>{e.preventDefault();
+ const id=$("fId").value.trim();if(!id)return;
+ if(!editing&&DB.samples.some(x=>x.id===id)){toast("Le code "+id+" existe déjà");return}
+ const r={id,date:$("fDate").value,reg:$("fReg").value,type:$("fType").value,ct:num($("fCt").value),tech:$("fTech").value,clade:$("fClade").value,lin:$("fLin").value.trim(),cov:num($("fCov").value),depth:num($("fDepth").value),st:$("fSt").value};
+ if(editing){DB.samples[DB.samples.findIndex(x=>x.id===editing)]=r}else DB.samples.push(r);
+ save();toast((editing?"Échantillon modifié : ":"Échantillon enregistré : ")+id);resetForm();renderAll()});
+$("cancelEdit").onclick=resetForm;
+$("sampleTbl").addEventListener("click",e=>{const ed=e.target.closest("[data-edit]"),de=e.target.closest("[data-del]");
+ if(ed){const r=DB.samples.find(x=>x.id===ed.dataset.edit);editing=r.id;
+  $("fId").value=r.id;$("fId").disabled=true;$("fDate").value=r.date;$("fReg").value=r.reg;$("fType").value=r.type;$("fCt").value=r.ct??"";$("fTech").value=r.tech;$("fClade").value=r.clade;$("fLin").value=r.lin;$("fCov").value=r.cov??"";$("fDepth").value=r.depth??"";$("fSt").value=r.st;
+  $("formTitle").textContent="Modifier "+r.id;$("saveBtn").textContent="Enregistrer les modifications";$("cancelEdit").hidden=false;window.scrollTo({top:0,behavior:"smooth"})}
+ if(de){if(de.dataset.sure){DB.samples=DB.samples.filter(x=>x.id!==de.dataset.del);save();renderAll();toast("Échantillon supprimé")}
+  else{de.dataset.sure=1;de.textContent="Confirmer ?";setTimeout(()=>{if(de.isConnected){delete de.dataset.sure;de.textContent="Supprimer"}},3000)}}});
+
+/* sauvegarde */
+$("expBtn").onclick=()=>{const b=new Blob([JSON.stringify(DB,null,2)],{type:"application/json"}),a=document.createElement("a");
+ a.href=URL.createObjectURL(b);a.download="genomix-lab-sauvegarde-"+new Date().toISOString().slice(0,10)+".json";document.body.appendChild(a);a.click();a.remove();toast("Sauvegarde téléchargée")};
+$("expCopy").onclick=()=>{const t=JSON.stringify(DB);if(navigator.clipboard)navigator.clipboard.writeText(t).then(()=>toast("Sauvegarde copiée")).catch(()=>toast("Copie refusée par le navigateur"));else toast("Copie non disponible")};
+$("impFile").onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{const d=JSON.parse(t);if(!Array.isArray(d.samples))throw 0;DB={samples:d.samples,mutations:d.mutations||[],newick:d.newick||""};save();$("nwk").value=DB.newick;renderAll();toast(d.samples.length+" échantillons restaurés")}).catch(()=>toast("Ce fichier n'est pas une sauvegarde Genomix-Lab"));e.target.value=""};
+$("wipeBtn").onclick=function(){if(this.dataset.sure){DB={samples:[],mutations:[],newick:""};save();$("nwk").value="";renderAll();toast("Toutes les données ont été effacées");delete this.dataset.sure;this.textContent="Tout effacer"}
+ else{this.dataset.sure=1;this.textContent="Confirmer l'effacement";setTimeout(()=>{delete this.dataset.sure;this.textContent="Tout effacer"},4000)}};
+
+/* pipelines */
+const PL={
+ ill:{t:"Illumina · lectures courtes",d:"Lectures appariées 2×150 pb (MiSeq / NextSeq). Pipeline par alignement sur référence.",s:[
+  ["Contrôle qualité des lectures","fastp","Élimine adaptateurs et bases de faible qualité (Q < 20)"],
+  ["Retrait des lectures humaines","Kraken2 · hostile","Protège la confidentialité des patients"],
+  ["Alignement sur la référence","BWA-MEM","Fichier BAM trié et indexé (samtools)"],
+  ["Appel de variants","iVar variants","Fréquence ≥ 0,75, profondeur ≥ seuil"],
+  ["Génome consensus","iVar consensus","Positions sous le seuil masquées en N"],
+  ["Clade et lignée","Nextclade · mpox","Qualité, clade, lignée, mutations APOBEC3"],
+  ["Rapport","MultiQC","Synthèse du lot pour validation biologique"]]},
+ ont:{t:"Oxford Nanopore · lectures longues",d:"Séquençage par amplicons ou métagénomique sur MinION / GridION.",s:[
+  ["Appel de bases","Dorado (sup)","Conversion du signal POD5 en lectures"],
+  ["Démultiplexage et adaptateurs","Dorado demux","Sépare les échantillons par code-barres"],
+  ["Filtrage par longueur et qualité","chopper","Q ≥ 10, longueur adaptée aux amplicons"],
+  ["Alignement sur la référence","minimap2 -ax map-ont","BAM trié et indexé"],
+  ["Polissage et consensus","Medaka","Corrige les erreurs typiques du Nanopore"],
+  ["Clade et lignée","Nextclade · mpox","Qualité, clade, lignée, mutations"],
+  ["Rapport","MultiQC · NanoPlot","Synthèse du lot pour validation biologique"]]}};
+let tech="ill",timer=null;
+function renderPl(){const p=PL[tech];$("plTitle").textContent=p.t;$("plDesc").textContent=p.d;
+ $("steps").innerHTML=p.s.map((s,i)=>`<li><span class="dot">${i+1}</span><div><b>${s[0]}</b><small>${s[2]}</small></div><span class="tool">${s[1]}</span></li>`).join("");
+ $("tIll").setAttribute("aria-pressed",tech==="ill");$("tOnt").setAttribute("aria-pressed",tech==="ont");
+ $("pRef").value=tech==="ont"?"NC_003310.1":"NC_063383.1";script()}
+function script(){const run=$("pRun").value,ref=$("pRef").value,dp=$("pDepth").value,t=$("pThr").value;
+ $("script").textContent=tech==="ill"?
+`#!/usr/bin/env bash
+# Lot ${run} · Illumina · référence ${ref}
+set -euo pipefail
+mkdir -p qc bam cons nextclade rapport
+for R1 in fastq/*_R1.fastq.gz; do
+  s=$(basename "$R1" _R1.fastq.gz)
+  fastp -i "$R1" -I "\${R1/_R1/_R2}" -o qc/$s.1.fq.gz -O qc/$s.2.fq.gz -w ${t} -j qc/$s.json
+  bwa mem -t ${t} ref/${ref}.fasta qc/$s.1.fq.gz qc/$s.2.fq.gz \\
+    | samtools sort -@ ${t} -o bam/$s.bam && samtools index bam/$s.bam
+  samtools mpileup -aa -A -d 0 -Q 0 bam/$s.bam \\
+    | ivar consensus -p cons/$s -m ${dp} -t 0.75 -n N
+done
+cat cons/*.fa > ${run}_consensus.fasta
+nextclade run --dataset-name nextstrain/mpox/all-clades \\
+  --output-all nextclade/ ${run}_consensus.fasta
+multiqc . -o rapport/`:
+`#!/usr/bin/env bash
+# Lot ${run} · Oxford Nanopore · référence ${ref}
+set -euo pipefail
+mkdir -p demux filt bam medaka nextclade
+dorado basecaller sup pod5/ --kit-name SQK-NBD114-24 > ${run}.bam
+dorado demux --output-dir demux/ --emit-fastq ${run}.bam
+for fq in demux/*.fastq; do
+  s=$(basename "$fq" .fastq)
+  chopper -q 10 -l 300 -t ${t} < "$fq" > filt/$s.fq
+  minimap2 -ax map-ont -t ${t} ref/${ref}.fasta filt/$s.fq \\
+    | samtools sort -o bam/$s.bam && samtools index bam/$s.bam
+  medaka_consensus -i filt/$s.fq -d ref/${ref}.fasta -o medaka/$s -t ${t}
+done
+cat medaka/*/consensus.fasta > ${run}_consensus.fasta
+nextclade run --dataset-name nextstrain/mpox/all-clades \\
+  --output-all nextclade/ ${run}_consensus.fasta`}
+$("tIll").onclick=()=>{if(timer)return;tech="ill";renderPl()};
+$("tOnt").onclick=()=>{if(timer)return;tech="ont";renderPl()};
+["pRun","pRef","pDepth","pThr"].forEach(i=>$(i).addEventListener("input",script));
+$("runBtn").onclick=()=>{const li=[...$("steps").children];let i=0;$("runBtn").disabled=true;li.forEach(l=>l.className="");
+ const tick=()=>{if(i>0)li[i-1].className="done";if(i<li.length){li[i].className="run";i++;timer=setTimeout(tick,900)}else{timer=null;$("runBtn").disabled=false;toast("Simulation terminée : "+li.length+" étapes sur "+li.length)}};tick()};
+$("copyBtn").onclick=()=>{const t=$("script").textContent;
+ const sel=()=>{const r=document.createRange();r.selectNodeContents($("script"));const s=getSelection();s.removeAllRanges();s.addRange(r);toast("Texte sélectionné, copiez-le avec Ctrl+C")};
+ if(navigator.clipboard)navigator.clipboard.writeText(t).then(()=>toast("Script copié")).catch(sel);else sel()};
+
+/* phylogénie : lecture Newick + arbre rectangulaire */
+function parseNewick(s){s=s.trim().replace(/;$/,"");let i=0;
+ function node(){const n={c:null,name:"",len:0};
+  if(s[i]==="("){i++;n.c=[node()];while(s[i]===","){i++;n.c.push(node())}if(s[i]!==")")throw 0;i++}
+  let m=s.slice(i).match(/^([^:,();\[]*)(\[[^\]]*\])?(?::([0-9.eE+-]+))?/);i+=m[0].length;n.name=m[1].trim().replace(/^'|'$/g,"");n.len=m[3]?+m[3]:0;return n}
+ const r=node();if(i<s.length)throw 0;return r}
+function drawTree(){const box=$("tree");if(!DB.newick){box.innerHTML=empty("Aucun arbre importé","Collez un arbre Newick ci-dessus, par exemple le fichier .treefile produit par IQ-TREE.");return}
+ let T;try{T=parseNewick(DB.newick)}catch(e){box.innerHTML=empty("Arbre illisible","Vérifiez que le texte est au format Newick et se termine par un point-virgule.");return}
+ let leaves=0,maxX=0,out="";(function lay(n,x){n.x=x+n.len;maxX=Math.max(maxX,n.x);if(n.c){n.c.forEach(c=>lay(c,n.x));n.y=(n.c[0].y+n.c[n.c.length-1].y)/2}else n.y=leaves++})(T,0);
+ if(!maxX)maxX=1;
+ const W=780,L=20,R=240,rowH=26,H=leaves*rowH+34,sx=v=>L+v/maxX*(W-L-R),sy=v=>15+v*rowH;
+ const colOf=name=>{const r=DB.samples.find(x=>x.clade&&name.includes(x.id));return r?CCOL[r.clade]:"var(--clNA)"};
+ (function dr(n,px){const x=sx(n.x),y=sy(n.y);out+=`<line x1="${sx(px)}" x2="${x}" y1="${y}" y2="${y}" stroke="var(--fg)" stroke-width="1.3"/>`;
+  if(n.c){out+=`<line x1="${x}" x2="${x}" y1="${sy(n.c[0].y)}" y2="${sy(n.c[n.c.length-1].y)}" stroke="var(--fg)" stroke-width="1.3"/>`;n.c.forEach(c=>dr(c,n.x));
+   if(n.name&&/^[0-9.]+$/.test(n.name))out+=`<text x="${x-4}" y="${y-4}" text-anchor="end" style="fill:var(--muted);font-size:9.5px">${esc(n.name)}</text>`}
+  else out+=`<circle cx="${x}" cy="${y}" r="4.5" fill="${colOf(n.name)}"/><text x="${x+9}" y="${y+4}">${esc(n.name)}</text>`})(T,0);
+ const sc=Number((maxX/5).toPrecision(1));out+=`<line x1="${L}" x2="${L+sc/maxX*(W-L-R)}" y1="${H-6}" y2="${H-6}" stroke="var(--muted)" stroke-width="2"/><text x="${L}" y="${H-12}" style="fill:var(--muted)">${String(sc).replace(".",",")} subst./site</text>`;
+ box.innerHTML=`<svg viewBox="0 0 ${W} ${H}" width="100%" style="min-width:640px" role="img" aria-label="Arbre phylogénétique">${out}</svg>`}
+$("nwk").value=DB.newick;
+$("drawBtn").onclick=()=>{DB.newick=$("nwk").value.trim();save();drawTree();if(DB.newick)toast("Arbre enregistré")};
+$("nwkFile").onchange=e=>{const f=e.target.files[0];if(f)f.text().then(t=>{$("nwk").value=t.trim();$("drawBtn").click()});e.target.value=""};
+
+/* surveillance */
+function renderSurv(){
+ const s=DB.samples.filter(x=>x.clade),d=REG.map(r=>[r,CLADES.map(c=>s.filter(x=>x.reg===r&&x.clade===c).length)]),mx=Math.max(1,...d.map(([,v])=>v.reduce((a,b)=>a+b,0)));
+ $("regBars").innerHTML=s.length?d.map(([r,v])=>{const n=v.reduce((a,b)=>a+b,0);return`<div class="hbar"><span>${r}</span><div class="track"><div style="display:flex;width:${n/mx*100}%">${v.map((x,i)=>x?`<span style="flex:${x};background:${CCOL[CLADES[i]]}" title="Clade ${CLADES[i]} : ${x}"></span>`:"").join("")}</div></div><span class="n">${n}</span></div>`}).join("")+`<div class="legend">${CLADES.map(c=>`<span><i style="background:${CCOL[c]}"></i>${c}</span>`).join("")}</div>`
+  :empty("Aucun génome typé","La carte par région se remplit dès qu'un échantillon a un clade.");
+ const A=[];
+ DB.samples.filter(x=>x.cov!=null&&x.cov<90).forEach(x=>A.push(["st-fail","Couverture faible : "+x.id,`${fr(x.cov)} % (${x.reg}). Re-séquençage à envisager.`]));
+ DB.samples.filter(x=>x.ct!=null&&x.ct>30&&x.st==="wait").forEach(x=>A.push(["st-run","Ct élevé : "+x.id,`Ct ${fr(x.ct)}. Risque de génome incomplet, prévoir un enrichissement.`]));
+ REG.forEach(r=>{const ib=DB.samples.filter(x=>x.reg===r&&x.clade==="Ib");if(ib.length)A.push(["st-fail","Clade Ib détecté : "+r,ib.length+" génome(s) : "+ib.map(x=>x.id).join(", ")+"."])});
+ $("alerts").innerHTML=A.length?A.map(([k,t,x])=>`<div style="border-left:3px solid var(--line);padding:2px 0 2px 12px"><span class="chip ${k}">${esc(t)}</span><p class="note" style="margin:6px 0 0">${esc(x)}</p></div>`).join("")
+  :empty("Aucune alerte","Les alertes apparaissent seules : couverture sous 90 %, Ct au-dessus de 30, détection du clade Ib.");
+ $("mutTbl").innerHTML=DB.mutations.length?`<table><thead><tr><th>Gène / motif</th><th>Type</th><th>Clade</th><th>Pourquoi on la suit</th><th>Génomes</th><th></th></tr></thead><tbody>${DB.mutations.map((m,i)=>`<tr><td class="mono">${esc(m.gene)}</td><td>${esc(m.type)||"—"}</td><td>${m.clade?chip(m.clade):"Tous"}</td><td style="white-space:normal;min-width:200px">${esc(m.why)||"—"}</td><td class="mono">${m.n}</td><td><button class="btn sm danger" data-mdel="${i}">Retirer</button></td></tr>`).join("")}</tbody></table>`
+  :empty("Aucune mutation suivie","Ajoutez une mutation avec le formulaire ci-dessus.");
+}
+$("mutForm").addEventListener("submit",e=>{e.preventDefault();DB.mutations.push({gene:$("mGene").value.trim(),type:$("mType").value.trim(),clade:$("mClade").value,why:$("mWhy").value.trim(),n:+$("mN").value||0});save();e.target.reset();renderSurv();toast("Mutation ajoutée")});
+$("mutTbl").addEventListener("click",e=>{const b=e.target.closest("[data-mdel]");if(b){DB.mutations.splice(+b.dataset.mdel,1);save();renderSurv()}});
+
+resetForm();renderPl();renderAll();
+if("serviceWorker" in navigator&&location.protocol.startsWith("http"))navigator.serviceWorker.register("sw.js").catch(()=>{});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,32 @@
+Genomix-Lab · Centre Pasteur du Cameroun
+Plateforme de surveillance génomique du Mpox (version vierge)
+==============================================================
+
+CONTENU DU DOSSIER
+- Genomix-Lab.html      : l'application complète (interface + code)
+- manifest.json   : fiche d'installation (nom, icône, couleurs)
+- sw.js           : permet le fonctionnement sans internet une fois installée
+- icon.svg, icon-192.png, icon-512.png : icônes de l'application
+
+1. UTILISER SUR PC (Windows)
+   Double-cliquez sur Genomix-Lab.html. L'application s'ouvre dans votre navigateur.
+   Les données saisies restent dans ce navigateur, sur cet ordinateur.
+
+2. INSTALLER SUR ANDROID (sans Play Store)
+   a. Mettez le dossier en ligne gratuitement :
+      allez sur https://app.netlify.com/drop et glissez-déposez ce dossier entier.
+      Netlify vous donne une adresse du type https://xxxx.netlify.app
+      Ajoutez /Genomix-Lab.html à la fin : https://xxxx.netlify.app/Genomix-Lab.html
+   b. Ouvrez cette adresse complète dans Chrome sur le téléphone.
+   c. Menu ⋮ puis « Installer l'application » (ou « Ajouter à l'écran d'accueil »).
+   L'icône Genomix-Lab apparaît et l'application marche ensuite sans internet.
+   La même adresse peut aussi être installée sur PC depuis Chrome ou Edge.
+
+3. SAUVEGARDER LES DONNÉES
+   Écran Échantillons > Sauvegarde > « Télécharger la sauvegarde ».
+   Pour passer les données sur un autre appareil : « Restaurer un fichier ».
+   Chaque appareil garde ses propres données : pensez à sauvegarder souvent.
+
+4. MODIFIER L'APPLICATION
+   Tout est dans Genomix-Lab.html (HTML, CSS et JavaScript, sans installation).
+   Vous pouvez l'ouvrir avec le Bloc-notes, VS Code ou Cursor.
